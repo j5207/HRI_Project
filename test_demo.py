@@ -118,13 +118,8 @@ class MoveGroup:
     def __init__(self):
         print ("============ Starting Moveit setup==============")
         moveit_commander.roscpp_initialize(sys.argv)
-<<<<<<< HEAD
         #rospy.init_node('move_group_python_interface',
                   #anonymous=True)
-=======
-        rospy.init_node('move_group_python_interface',
-                  anonymous=True)
->>>>>>> d1f5881878b7ab599b4d756fa91fef8580f5544c
         self._robot = moveit_commander.RobotCommander()
         self._scene = moveit_commander.PlanningSceneInterface()
         self._group = moveit_commander.MoveGroupCommander("manipulator")
@@ -133,34 +128,16 @@ class MoveGroup:
                                       moveit_msgs.msg.DisplayTrajectory,
                                       queue_size=20)
         
-<<<<<<< HEAD
         print ("============ Reference frame: %s" % self._group.get_planning_frame())
         print ("============ End effector: %s" % self._group.get_end_effector_link())
         print ("============ Robot Groups:")
         print (self._robot.get_group_names())
         print ("============ Printing robot state")
         print (self._robot.get_current_state())
-=======
-        print ("============ Waiting for RVIZ====================")
-        rospy.sleep(10)
-        print ("============ Reference frame: %s" % group.get_planning_frame())
-        print ("============ End effector: %s" % group.get_end_effector_link())
-        print ("============ Robot Groups:")
-        print (robot.get_group_names())
-        print ("============ Printing robot state")
-        print (robot.get_current_state())
->>>>>>> d1f5881878b7ab599b4d756fa91fef8580f5544c
         print ("============")
         self.waypoints = []
         self.waypoints.append(self._group.get_current_pose().pose) # start with the current pose
         self.wpose = geometry_msgs.msg.Pose()
-<<<<<<< HEAD
-=======
-        self.wpose.orientation.w = 1.0 # first orient gripper and move forward (+x)
-        # self.client = actionlib.SimpleActionClient('icl_phri_ur5/follow_joint_trajectory', FollowJointTrajectoryAction)
-        # print ("Waiting for server...")
-        # self.client.wait_for_server()
->>>>>>> d1f5881878b7ab599b4d756fa91fef8580f5544c
         
     def append_waypoint(self, Q):
         self.wpose = copy.deepcopy(self._group.get_current_pose().pose)
@@ -178,7 +155,6 @@ class MoveGroup:
                                      self.waypoints,   # waypoints to follow
                                      0.005,        # eef_step, 1cm
                                      0.0)         # jump_threshold, disabling
-<<<<<<< HEAD
         rospy.sleep(1)
         self._group.execute(cartesian_plan)
         self.waypoints.pop(0)
@@ -186,38 +162,6 @@ class MoveGroup:
     def move(self, Q):
         self.append_waypoint(Q)
         
-=======
-        print ('==========wait rviz to display========')
-        rospy.sleep(5)
-        self._group.execute(cartesian_plan)
-        self.waypoints.pop(0)
-
-
-    def move(self, Q):
-        self.append_waypoint(Q)
-        
-        # g = FollowJointTrajectoryGoal()
-        # g.trajectory = JointTrajectory()
-        # g.trajectory.joint_names = JOINT_NAMES
-        # move_time = 10.0
-        # try:
-        #     joint_states = rospy.wait_for_message("icl_phri_ur5/joint_states", JointState)
-        #     joints_pos = joint_states.position
-        #     #joints_pos = self._group.get_current_joint_values()
-        #     g.trajectory.points = []
-        #     time_from_start = 0.0
-        #     g.trajectory.points.append(JointTrajectoryPoint(positions=joints_pos, velocities=[0]*6, time_from_start=rospy.Duration(time_from_start)))
-        #     for q in qs:
-        #         time_from_start = time_from_start + move_time
-        #         g.trajectory.points.append(JointTrajectoryPoint(positions=q, velocities=[0]*6, time_from_start=rospy.Duration(time_from_start)))
-        #     self.client.send_goal(g)
-        #     return self.client.wait_for_result()
-        # except KeyboardInterrupt:
-        #     self.client.cancel_goal()
-        #     raise
-        # except:
-        #     raise
->>>>>>> d1f5881878b7ab599b4d756fa91fef8580f5544c
         
     def get_pose(self):
         return self._group.get_current_pose().pose
@@ -243,11 +187,7 @@ class Handover:
         rate = rospy.Rate(10.0)
         rate.sleep()        
         try:
-<<<<<<< HEAD
             (trans, rot) = self.listener.lookupTransform(target_frame, source_frame, rospy.Time(0))
-=======
-            (trans, rot) = self.listener.lookupTransform(frame1, frame2, rospy.Time(0))
->>>>>>> d1f5881878b7ab599b4d756fa91fef8580f5544c
             return trans, rot
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             print("wait for tf")
@@ -257,30 +197,20 @@ class Handover:
         return [x + y for x, y in zip(ls1, ls2)]
 
 
-<<<<<<< HEAD
     def _get_handover_pos(self):
         (trans1, rot1) = self._get_transform('/right_hand_1', '/base_link')
-        offset = ([0, 0, 0.4],
+        offset = ([0, -0.2, 0.2],
                             [0, 0, 0, 0])
-        rot_new = tf.transformations.quaternion_multiply(rot1, offset[1])
+        # rot_new = tf.transformations.quaternion_multiply(rot1, offset[1])
         #tf.transformations.quaternion_from_euler()
         trans_new = self._list_add(trans1, offset[0])
         # Q = trans_new + list(rot_new)
-=======
-    def get_handover_pos(self):
-        (trans1, rot1) = self.get_transform('/right_hand_1', '/base_link')
-        (trans2, rot2) = ([1.2472304749429421, -0.2435223285317073, 0.25414502289255403],
-                            [-0.9961315207647974, 0.0028692349443506515, -0.08656085053647994, 0.014865395522738467])
-        rot_new = tf.transformations.quaternion_multiply(rot2, rot1)
-        #tf.transformations.quaternion_from_euler()
-        trans_new = self._list_add(trans1, trans2)
->>>>>>> d1f5881878b7ab599b4d756fa91fef8580f5544c
+        rot_new = [0, 0, 0.707, 0.707]
         Q = trans_new + list(rot_new)
         return Q
         
 
     def frame_action(self, trans):
-<<<<<<< HEAD
         if abs(trans[0]) > 0.4:
             rospy.sleep(1)
             Q_new = self._get_handover_pos()
@@ -291,18 +221,6 @@ class Handover:
         #     print(self._mg.move([Q_wait]))
         #     self.fetch = False
 
-=======
-        if abs(trans[0]) > 1 and not self.fetch
-            rospy.sleep(5)
-            Q_new = self.get_handover_pos()
-            print('Q_new', Q_new)
-            print(self._mg.move([Q_new]))
-            self.fetch = True
-        if abs(trans[0]) < 0.4 and self.fetch:
-            print(self._mg.move([Q_wait]))
-            self.fetch = False
-        
->>>>>>> d1f5881878b7ab599b4d756fa91fef8580f5544c
 if __name__ == '__main__':
     rospy.init_node('test', anonymous=True)
     h = Handover()
@@ -310,19 +228,11 @@ if __name__ == '__main__':
         try:
             rate = rospy.Rate(10.0)
             rate.sleep()
-<<<<<<< HEAD
             trans = h._get_transform('/right_hand_1', '/right_shoulder_1')[0]
             # print("hand_gripper_tf_trans:{}\nhand_gripper_tf_quat:{}".format(
             #     h._get_transform('/ee_link', '/right_hand_1')[0],
             #     h._get_transform('/ee_link', '/right_hand_1')[1]
             # ))
-=======
-            trans = h.get_transform('/left_hand_1', '/right_hand_1')[0]
-            print("hand_gripper_tf_trans:{}\nhand_gripper_tf_quat:{}".format(
-                h.get_transform('/ee_link', '/right_hand_1')[0],
-                h.get_transform('/ee_link', '/right_hand_1')[1]
-            ))
->>>>>>> d1f5881878b7ab599b4d756fa91fef8580f5544c
             h.frame_action(trans)
         except:
             print('no action')
